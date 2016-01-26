@@ -1,0 +1,134 @@
+{
+    "constants": {
+        "asset_path": "./assets",
+        "image_path": "images",
+        "video_path": "videos",
+        "model_path": "models"
+    },
+    "object": {
+        "type": "Object3D",
+        "uuid": "root",
+        "children": [
+            {
+                "type": "Collada",
+                "uuid": "monster",
+                "url": "monster.dae"
+            },
+            {
+                "type": "Mesh",
+                "uuid": "cube_mesh",
+                "geometry": "geo_box",
+                "material": "material_phong"
+            },
+            {
+                "type": "OBJMTL",
+                "uuid": "rock",
+                "objUrl": "rock.obj",
+                "mtlUrl": "rock.mtl"
+            },
+            {
+                "type": "Mesh",
+                "uuid": "plane_banana",
+                "geometry": "geo_plane",
+                "material": "mat_banana"
+            },
+            {
+                "type": "Mesh",
+                "uuid": "plane_coconut",
+                "geometry": "geo_plane",
+                "material": "mat_coconut"
+            },
+            {
+                "type": "Mesh",
+                "uuid": "plane_lehublot",
+                "geometry": "geo_plane",
+                "material": "mat_lehublot"
+            }
+        ]
+    },
+    "geometries": [
+        {
+            "type": "BoxGeometry",
+            "uuid": "geo_box",
+            "width": 1,
+            "height": 1,
+            "depth": 1
+        },
+        {
+            "type": "PlaneGeometry",
+            "uuid": "geo_plane",
+            "width": 1,
+            "height": 1
+        }
+    ],
+    "materials": [
+        {
+            "type": "MeshBasicMaterial",
+            "uuid": "mat_banana",
+            "map": "text_banana",
+            "transparent": true,
+            "side": 2
+        },
+        {
+            "type": "MeshBasicMaterial",
+            "uuid": "mat_lehublot",
+            "map": "text_lehublot",
+            "side": 2
+        },
+        {
+            "type": "MeshBasicMaterial",
+            "uuid": "mat_coconut",
+            "map": "text_coconut",
+            "transparent": true,
+            "side": 2
+        },
+        {
+            "type": "MeshBasicMaterial",
+            "uuid": "material_basic",
+            "color": "0x7F2109"
+        },
+        {
+            "type": "MeshPhongMaterial",
+            "uuid": "material_phong",
+            "color": "0x7F2109"
+        }
+    ],
+    "textures": [
+        {
+            "image": "img_lehublot",
+            "uuid": "text_lehublot",
+            "minFilter": 1006
+        },
+        {
+            "image": "img_banana",
+            "uuid": "text_banana",
+            "animated": true,
+            "minFilter": 1006
+        },
+        {
+            "image": "img_coconut",
+            "uuid": "text_coconut",
+            "minFilter": 1006
+        }
+    ],
+    "images": [
+        {
+            "url": "coconut.png",
+            "uuid": "img_coconut"
+        },
+        {
+            "url": "lehublot.jpg",
+            "uuid": "img_lehublot"
+        },
+        {
+            "url": "banana.gif",
+            "uuid": "img_banana"
+        }
+    ],
+    "videos": [
+        {
+            "url": "frozen360p.mp4",
+            "uuid": "vid_frozen"
+        }
+    ]
+}
