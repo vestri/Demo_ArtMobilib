@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Channel preset 1",
+    "marker": "marker_3Dtricart",
+    "contents": [
+      {
+        "uuid": "banana"
+      },
+      {
+        "uuid": "lehublot"
+      }
+    ]
+  },
+  {
+    "name": "Channel preset 2",
+    "marker": "marker_tag",
+    "contents": [
+      {
+        "uuid": "Monster"
+      },
+      {
+        "uuid": "Rock"
+      }
+    ]
+  }
+]

@@ -1,0 +1,39 @@
+[
+  {
+    "uuid": "marker_tag",
+    "name": "Tag Aruco",
+    "url": "assets/images/tag.jpg",
+    "is_tag": true,
+    "tag_id": 1001
+  },
+  {
+    "uuid": "marker_3Dtricart",
+    "name": "Marker image 1",
+    "url": "assets/images/3Dtricart.jpg"
+  },
+  {
+    "uuid": "marker_vsd",
+    "name": "Marker image 2",
+    "url": "assets/images/vsd.jpg"
+  },
+  {
+    "uuid": "tag2",
+    "name": "Tag draw",
+    "url": "assets/images/tag2.jpg"
+  },
+  {
+    "uuid": "tag3",
+    "name": "Tag AR",
+    "url": "assets/images/tag3.jpg"
+  },
+  {
+    "uuid": "tag4",
+    "name": "Tag squares",
+    "url": "assets/images/tag4.jpg"
+  },
+  {
+    "uuid": "tag5",
+    "name": "Tag Space Invaders",
+    "url": "assets/images/tag5.jpg"
+  }
+]

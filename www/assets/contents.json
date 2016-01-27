@@ -1,0 +1,32 @@
+[
+  {
+    "uuid": "Rock",
+    "name": "Rock",
+    "object": "rock"
+  },
+  {
+    "uuid": "Cube",
+    "name": "Cube",
+    "object": "cube_mesh"
+  },
+  {
+    "uuid": "Monster",
+    "name": "Monster",
+    "object": "monster"
+  },
+  {
+    "uuid": "banana",
+    "name": "Banana",
+    "object": "plane_banana"
+  },
+  {
+    "uuid": "lehublot",
+    "name": "Le Hublot",
+    "object": "plane_lehublot"
+  },
+  {
+    "uuid": "coconut",
+    "name": "Coconut",
+    "object": "plane_coconut"
+  }
+]

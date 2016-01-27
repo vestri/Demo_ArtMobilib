@@ -26,7 +26,6 @@ angular.module('starter')
     };
 
     $scope.GetChannelContainer = function() {
-      DataManagerSvc.tracking_data_manager.Clean();
       return DataManagerSvc.tracking_data_manager.GetChannelContainer();
     };
 
@@ -40,10 +39,13 @@ angular.module('starter')
 
     $scope.LoadPreset = function() {
       DataManagerSvc.LoadPreset();
-    }
+    };
 
     $scope.CreateChannel = function() {
-      var channel_id = DataManagerSvc.tracking_data_manager.AddChannel();
-      $state.go('channel_create', { channel_id: channel_id });
-    }
+      $state.go('channel_create');
+    };
+
+    $scope.LoadChannelsServer = function() {
+      DataManagerSvc.LoadChannelsServer();
+    };
 }]);

@@ -93,11 +93,13 @@ angular.module('starter')
 
             var marker = DataManagerSvc.tracking_data_manager.GetMarker(channels[uuid].marker);
 
-            if (marker.is_tag) {
-              var object = DataManagerSvc.tracking_data_manager.BuildChannelContents(uuid);
+            if (marker) {
+              if (marker.is_tag) {
+                var object = DataManagerSvc.tracking_data_manager.BuildChannelContents(uuid);
 
-              _scene.AddObject(object);
-              _trackedObjManager.Add(object, uuid);
+                _scene.AddObject(object);
+                _trackedObjManager.Add(object, uuid);
+              }
             }
 
           }

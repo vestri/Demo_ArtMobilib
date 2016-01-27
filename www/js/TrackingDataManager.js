@@ -49,10 +49,7 @@ TrackingDataManager = function() {
     _channels[id] = channel;
 
     for (contents_transform of contents_transforms) {
-      if (typeof(that.GetContents(contents_transform.uuid)) === 'undefined')
-        console.warn('TrackingDataManager: failed to add contents to channel: contents "' + contents_transform.uuid + '" doesnt exists');
-      else
-        that.AddContentsToChannel(id, contents_transform);
+      that.AddContentsToChannel(id, contents_transform);
     }
 
     return id;
@@ -316,7 +313,7 @@ TrackingDataManager = function() {
 
   this.AddContentsToChannel = function(channel_uuid, contents_transform) {
     var channel = that.GetChannel(channel_uuid);
-    var contents = that.GetContents(contents_transform.uuid);
+    var contents = that.GetContents(contents_transform.uuid) || {};
 
     if (typeof contents_transform.uuid !== 'undefined') {
       channel.contents.push( {
@@ -324,10 +321,9 @@ TrackingDataManager = function() {
         position: contents_transform.position || { x: 0, y: 0, z: 0 },
         rotation: contents_transform.rotation || { x: 0, y: 0, z: 0 },
         scale: contents_transform.scale || 1,
-        name: contents_transform.name || contents.name
+        name: contents_transform.name || contents.name || ''
       } );
     }
-
   };
 
   this.BuildChannelContents = function(channel_uuid) {
@@ -341,10 +337,10 @@ TrackingDataManager = function() {
 
       var contents = that.GetContents(transform.uuid);
 
-      if (!contents.object)
+      if (typeof (contents) === 'undefined' || typeof (contents.object) === 'undefined')
         continue;
       var contents_mesh = that.GetObject(contents.object);
-      if (!contents_mesh)
+      if (typeof (contents_mesh) === 'undefined')
         continue;
 
       var mesh = contents_mesh.clone();
