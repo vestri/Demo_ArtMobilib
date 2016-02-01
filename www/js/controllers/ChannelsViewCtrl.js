@@ -104,6 +104,6 @@ angular.module('starter')
     };
 
     $scope.input = {};
-    $scope.input.marker_name = 'tag_1.jpg';
-    $scope.input.contents_name = 'contents1';
+    $scope.input.marker_name = '';
+    $scope.input.contents_name = '';
 }]);
