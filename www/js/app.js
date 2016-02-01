@@ -20,12 +20,12 @@ angular.module('starter', ['ionic', 'ngCordova'])
 
     $rootScope.is_web_view = _is_web_view;
 
-
     if (_is_web_view)
       DataManagerSvc.OpenCustomAssets();
 
     DataManagerSvc.LoadConfig();
-  })
+
+  });
 }])
 
 .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {

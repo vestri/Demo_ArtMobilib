@@ -1,7 +1,7 @@
 angular.module('starter')
 
-.directive('trackingView', ['DataManagerSvc', 
-  function(DataManagerSvc) {
+.directive('trackingView', ['$ionicPlatform', 'DataManagerSvc', 
+  function($ionicPlatform, DataManagerSvc) {
     return {
       restrict: 'E',
       template: '<div/>',
@@ -22,6 +22,7 @@ angular.module('starter')
         var _trackedObjManager;
 
         var _running = false;
+        var _destroyed = false;
 
 
         function CreateCanvasElementGlobal(id) {
@@ -36,129 +37,148 @@ angular.module('starter')
         }
 
 
-        _device_lock_screen.LockPortrait();
+        $ionicPlatform.ready(function() {
 
-        _canvas = CreateCanvasElementGlobal('canvasthree');
+          _device_lock_screen.LockPortrait();
 
-
-        _scene = new Scene( { canvas: _canvas, fov: (scope.isWebView) ? 80 : 40 } );
-        _scene.SetFullWindow();
-        
-
-        // Create background
-        _webcam_grabbing = new FrontCamGrabbing();
-        document.body.appendChild(_webcam_grabbing.domElement);
-
-        // Create scene
-        var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-        _scene.AddObject(light);
+          _canvas = CreateCanvasElementGlobal('canvasthree');
 
 
-        // Orient camera
-        _orientationControl = new DeviceOrientationControl(_scene.GetCamera());
-        _orientationControl.Connect();
+          _scene = new Scene( { canvas: _canvas, fov: (scope.is_web_view) ? 80 : 40 } );
+          _scene.SetFullWindow();
+          
+
+          // Create background
+          _webcam_grabbing = new FrontCamGrabbing();
+          document.body.appendChild(_webcam_grabbing.domElement);
+
+          // Create scene
+          var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+          _scene.AddObject(light);
 
 
-        // Start Aruco
-        _js_aruco_marker = new THREEx.JsArucoMarker();
-
-        // start Image marker detection
-        var canvas2d = document.createElement('canvas');
-        canvas2d.width = 640;
-        canvas2d.height = 480;
-        var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, canvas2d);
-
-        // we load trained images
-        /*_AMmarkerManager.AddMarker("lib/ArtMobilib/data/gvf.jpg");
-        _AMmarkerManager.AddMarker("lib/ArtMobilib/data/3Dtricart.jpg");
-        _AMmarkerManager.AddMarker("lib/ArtMobilib/data/vsd.jpg");*/
-
-        
-        _trackedObjManager = new TrackedObjManager( { camera: _scene.GetCamera() } );
+          // Orient camera
+          _orientationControl = new DeviceOrientationControl(_scene.GetCamera());
+          _orientationControl.Connect();
 
 
-        function OnWindowResize() {
-          _scene.ResizeRenderer(window.innerWidth, window.innerHeight);
-        }
-        window.addEventListener('resize', OnWindowResize, false);
+          // Start Aruco
+          _js_aruco_marker = new THREEx.JsArucoMarker();
+
+          // start Image marker detection
+          var canvas2d = document.createElement('canvas');
+          canvas2d.width = 640;
+          canvas2d.height = 480;
+          var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, canvas2d);
+
+          // we load trained images
+          /*_AMmarkerManager.AddMarker("lib/ArtMobilib/data/gvf.jpg");
+          _AMmarkerManager.AddMarker("lib/ArtMobilib/data/3Dtricart.jpg");
+          _AMmarkerManager.AddMarker("lib/ArtMobilib/data/vsd.jpg");*/
+
+          
+          _trackedObjManager = new TrackedObjManager( { camera: _scene.GetCamera() } );
 
 
-        document.body.appendChild(_canvas);
-
-
-        DataManagerSvc.tracking_data_manager.OnLoadContentsAssets(function() {
-
-          var channels = DataManagerSvc.tracking_data_manager.GetChannelContainer();
-          for (uuid in channels) {
-
-            var marker = DataManagerSvc.tracking_data_manager.GetMarker(channels[uuid].marker);
-
-            if (marker) {
-              if (marker.is_tag) {
-                var object = DataManagerSvc.tracking_data_manager.BuildChannelContents(uuid);
-
-                _scene.AddObject(object);
-                _trackedObjManager.Add(object, uuid);
-              }
-            }
-
+          function OnWindowResize() {
+            _scene.ResizeRenderer(window.innerWidth, window.innerHeight);
           }
-
-          _webcam_grabbing.Start();
-
-
-          // Main loop
-          _running = true;
-          (function loop() {
-            if (!_running)
-              return;
-
-            requestAnimationFrame(loop);
-
-            _orientationControl.Update();
+          window.addEventListener('resize', OnWindowResize, false);
 
 
-            var tags = _js_aruco_marker.detectMarkers(_webcam_grabbing.domElement);
-
-            for (tag of tags) {
-
-              var channels = DataManagerSvc.tracking_data_manager.GetChannelContainer();
-
-
-              for (uuid in channels) {
-                var marker = DataManagerSvc.tracking_data_manager.GetMarker(channels[uuid].marker);
-                if (marker.is_tag && marker.tag_id === tag.id) {
-                  var o = new THREE.Object3D();
-                  _js_aruco_marker.markerToObject3D(tag, o);
-                  _trackedObjManager.TrackCompose(uuid, o.position, o.quaternion, o.scale);
-                }
-              }
-            }
-
-            /*if (_AMmarkerManager.ProcessVideo()) {
-              console.log("Marker detected");
-              var o = new THREE.Object3D();
-              _AMmarkerManager.markerToObject3D(o);
-              _trackedObjManager.TrackCompose('mesh', o.position, o.quaternion, o.scale);
-            }*/
-
-            _trackedObjManager.Update();
-
-            DataManagerSvc.tracking_data_manager.UpdateAnimations();
-
-            _scene.Update();
-            _scene.Render();
-          })();
-
+          document.body.appendChild(_canvas);
 
           scope.$on('$destroy', function() {
             _running = false;
+            _destroyed = true;
             document.body.removeChild(_webcam_grabbing.domElement);
             document.body.removeChild(_canvas);
             _webcam_grabbing.Stop();
           });
 
+          function InitScene() {
+            if (_destroyed)
+              return;
+
+            var channels = DataManagerSvc.tracking_data_manager.GetChannelContainer();
+            for (uuid in channels) {
+
+              var marker = DataManagerSvc.tracking_data_manager.GetMarker(channels[uuid].marker);
+
+              if (marker) {
+                if (marker.is_tag) {
+                  var object = DataManagerSvc.tracking_data_manager.BuildChannelContents(uuid);
+
+                  (function(object) {
+                    _trackedObjManager.Add(object, uuid, function() {
+                      _scene.AddObject(object);
+                    }, function() {
+                      _scene.RemoveObject(object);
+                    });
+                  })(object);
+                }
+              }
+
+            }
+
+            _webcam_grabbing.Start();
+
+          }
+
+          function Run() {
+            if (_destroyed)
+              return;
+
+            _running = true;
+            (function loop() {
+              if (!_running)
+                return;
+
+              _orientationControl.Update();
+
+
+              var tags = _js_aruco_marker.detectMarkers(_webcam_grabbing.domElement);
+
+              var channels = DataManagerSvc.tracking_data_manager.GetChannelContainer();
+
+              for (tag of tags) {
+                for (uuid in channels) {
+                  var marker = DataManagerSvc.tracking_data_manager.GetMarker(channels[uuid].marker);
+                  if (marker.is_tag && marker.tag_id === tag.id) {
+                    var o = new THREE.Object3D();
+                    _js_aruco_marker.markerToObject3D(tag, o);
+                    _trackedObjManager.TrackCompose(uuid, o.position, o.quaternion, o.scale);
+                  }
+                }
+              }
+
+              /*if (_AMmarkerManager.ProcessVideo()) {
+                console.log("Marker detected");
+                var o = new THREE.Object3D();
+                _AMmarkerManager.markerToObject3D(o);
+                _trackedObjManager.TrackCompose('mesh', o.position, o.quaternion, o.scale);
+              }*/
+
+              _trackedObjManager.Update();
+
+              DataManagerSvc.tracking_data_manager.UpdateAnimations();
+
+              _scene.Update();
+              _scene.Render();
+
+              window.requestAnimationFrame(loop);
+            })();
+          }
+
+          DataManagerSvc.OnLoadConfig(function() {
+            DataManagerSvc.tracking_data_manager.OnLoadContentsAssets(function() {
+              InitScene();
+              Run();
+            });
+          });
+
         });
+
 
       }
 
