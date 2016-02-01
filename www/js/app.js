@@ -1,4 +1,4 @@
-angular.module('starter', ['ionic'])
+angular.module('starter', ['ionic', 'ngCordova'])
 
 .run(['$ionicPlatform', '$rootScope', '$state', 'DataManagerSvc',
   function($ionicPlatform, $rootScope, $state, DataManagerSvc) {
@@ -16,37 +16,15 @@ angular.module('starter', ['ionic'])
       StatusBar.styleDefault();
     }
 
-    var _isWebView = ionic.Platform.isWebView();
+    var _is_web_view = ionic.Platform.isWebView();
 
-    $rootScope.isWebView = _isWebView;
-
-    var _stack = [];
-    var _ignore_state_change = false;
-
-    var _current_params;
+    $rootScope.is_web_view = _is_web_view;
 
 
-    $rootScope.$on('$stateChangeSuccess', function(ev, to, toParams, from, fromParams) {
-
-      if (!_ignore_state_change)
-        _stack.push( { from: from, fromParams: fromParams } );
-      else
-        _ignore_state_change = false;
-
-      _current_params = toParams;
-
-    });
-
-    $rootScope.GoPrevious = function() {
-      if (_stack.length != 0) {
-        var prev = _stack.pop();
-        _ignore_state_change = true;
-        $state.go(prev.from, prev.fromParams);
-      }
-    }
+    if (_is_web_view)
+      DataManagerSvc.OpenCustomAssets();
 
     DataManagerSvc.LoadConfig();
-
   })
 }])
 

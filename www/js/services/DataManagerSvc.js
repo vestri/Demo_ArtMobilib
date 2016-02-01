@@ -1,9 +1,19 @@
 angular.module('starter')
 
-.service('DataManagerSvc', function() {
+.service('DataManagerSvc', ['$cordovaFileTransfer', 'ConfigManager', 'AssetsLoader', 'AssetsDownloader', 'JsonLoader',
+  function($cordovaFileTransfer, ConfigManager, AssetsLoader, AssetsDownloader, JsonLoader) {
   var that = this;
 
-  var _config_manager = new ConfigManager();
+
+  var _local_config = new ConfigManager();
+  var _server_config = new ConfigManager('download/channels.json');
+
+  var _contents_downloader = new AssetsDownloader();
+  var _marker_downloader = new AssetsDownloader();
+  var _on_download_marker;
+  var _on_download_contents;
+  var _assets_loader = new AssetsLoader();
+
 
   function GetXDomainRequest() {
     var xdr = null;
@@ -107,13 +117,14 @@ angular.module('starter')
   };
 
   this.LoadConfig = function() {
-    _config_manager.Load();
-    that.tracking_data_manager.ParseChannels(_config_manager.json, true);
+    _local_config.Load(function() {
+      that.tracking_data_manager.ParseChannels(_local_config.json, true);
+    });
   };
 
   this.SaveConfig = function() {
-    _config_manager.json = that.tracking_data_manager.ChannelsToJson();
-    _config_manager.Save();
+    _local_config.json = that.tracking_data_manager.ChannelsToJson();
+    _local_config.Save();
   };
 
   this.ClearConfig = function() {
@@ -125,12 +136,107 @@ angular.module('starter')
     this.LoadChannels('channels.json', true);
   };
 
-  this.LoadChannelsServer = function() {
-    SetOriginToServer();
-    that.LoadChannels('channels.json');
+  this.OpenCustomAssets = function() {
+    _assets_loader.LoadMarkers(function() {
+      for(ent of _assets_loader.markers) {
+        that.tracking_data_manager.AddMarker(ent.url, ent.uuid, ent.name, ent.tag_id);
+      }
+    });
+    _assets_loader.LoadContents(function() {
+      for(object_url of _assets_loader.object_urls) {
+
+        that.tracking_data_manager.OnLoadContentsAssets(function(url, dir) {
+          return function() {
+            that.tracking_data_manager.LoadContentsAssets(url, dir);
+          };
+        }(object_url.url, object_url.dir));
+        
+      }
+      for(ent of _assets_loader.contents) {
+        that.tracking_data_manager.AddContents(ent.object, ent.uuid, ent.name);
+      }
+    });
+  };
+
+  this.DownloadMarker = function(name, on_load) {
+    if (!_marker_downloader.IsLoading()) {
+      _on_download_marker = on_load;
+      _marker_downloader.source = 'artmobilis/assets/markers/' + name;
+      _marker_downloader.dst = 'assets/markers/' + name;
+      _marker_downloader.Download(function() {
+        console.log('File downloaded: ' + _marker_downloader.dst_full_path);
+        if (_on_download_marker) {
+          var fun = _on_download_marker;
+          _on_download_marker = undefined;
+          fun();
+        }
+      }, function() {
+        window.alert('Failed to download file: ' + _marker_downloader.dst_full_path);
+      });
+    }
+  };
+
+  function DownloadContentsFilesRec(list, params) {
+    if (list.length > 0) {
+      var filename = list.pop();
+
+      _contents_downloader.dst = params.dst_dir + filename;
+      _contents_downloader.source = params.src_dir + filename;
+
+      _contents_downloader.Download(function() {
+        console.log('File downloaded: ' + filename);
+        DownloadContentsFilesRec(list, params);
+      }, function() {
+        window.alert('Failed to download file: ' + filename);
+        DownloadContentsFilesRec(list, params);
+      });
+    }
+    else {
+      if (_on_download_contents) {
+        var fun = _on_download_contents;
+        _on_download_contents = undefined;
+        fun();
+      }
+    }
+  }
+
+  function DownloadContentsFiles(json, params) {
+    json = json || {};
+    var list = json.files || [];
+
+    list = list.slice(0);
+
+    DownloadContentsFilesRec(list, params);
+  }
+
+  this.DownloadContents = function(name, on_load) {
+
+    var src_dir = 'artmobilis/assets/contents/' + name + '/';
+    var dst_dir = 'assets/contents/' + name + '/';
+    var config_name = 'config.json';
+
+    var src_file = src_dir + config_name;
+    var dst_file = dst_dir + config_name;
+
+    if (!_contents_downloader.IsLoading()) {
+      _on_download_contents = on_load;
+
+      _contents_downloader.source = src_file;
+      _contents_downloader.dst = dst_file;
+
+      _contents_downloader.Download(function() {
+        var json_loader = new JsonLoader();
+        json_loader.Load(_contents_downloader.dst_full_path, function() {
+          DownloadContentsFiles(json_loader.json, { src_dir: src_dir, dst_dir: dst_dir });
+        }, function() {
+          console.log('JsonLoader failed to load file "' + _contents_downloader.dst_full_path + '"');
+        });
+      });
+    }
   };
 
   ResetOrigin();
   this.LoadMarkers('markers.json', true);
   this.LoadContents('contents.json', true);
-})
+
+}])

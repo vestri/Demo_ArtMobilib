@@ -15,12 +15,22 @@ TrackingDataManager = function() {
   var _assets_loaded = false;
   
 
-  this.AddMarker = function(marker, uuid) {
-    _markers[uuid] = { img: marker };
+  this.AddMarker = function(url, uuid, name, tag_id) {
+    _markers[uuid] =
+    {
+      img: url,
+      name: name || 'unnamed marker',
+      is_tag: (tag_id != undefined),
+      tag_id: tag_id
+    };
   };
 
-  this.AddContents = function(contents, uuid) {
-    _contents_container[uuid] = { contents: contents };
+  this.AddContents = function(object, uuid, name) {
+    _contents_container[uuid] =
+    {
+      object: object,
+      name: name || 'unnamed contents'
+    };
   };
 
   this.AddChannel = function(marker_id, contents_transforms, uuid, name) {
@@ -84,13 +94,7 @@ TrackingDataManager = function() {
       else if (typeof(elem.url) === 'undefined')
         console.warn('TrackingDataManager: failed to parse marker "' + elem.uuid + '": url undefined');
       else {
-        _markers[elem.uuid] =
-        {
-          img: elem.url,
-          name: elem.name || 'unnamed marker',
-          is_tag: elem.is_tag,
-          tag_id: elem.tag_id
-        };
+        that.AddMarker(elem.url, elem.uuid, elem.name, (elem.is_tag) ? elem.tag_id : undefined);
       }
     }
 
@@ -107,12 +111,7 @@ TrackingDataManager = function() {
       else if (typeof(elem.object) === 'undefined')
         console.warn('TrackingDataManager: failed to parse contents "' + elem.uuid + '": "object" undefined');
       else {
-        _contents_container[elem.uuid] =
-        {
-          contents: elem.contents,
-          object: elem.object,
-          name: elem.name || 'unnamed contents'
-        };
+        that.AddContents(elem.object, elem.uuid, elem.name);
       }
     }
 
@@ -120,8 +119,10 @@ TrackingDataManager = function() {
   };
 
   this.ParseChannels = function(json) {
-    if (typeof(json) === 'undefined')
+    if (!Array.isArray(json)) {
+      console.warn('TrackingDataManager: ParseChannels: json isnt an array');
       return false;
+    }
 
     for (elem of json) {
       if (typeof(elem.marker) === 'undefined')
@@ -220,8 +221,11 @@ TrackingDataManager = function() {
     return _markers;
   };
 
-  this.LoadContentsAssets = function(url) {
+  this.LoadContentsAssets = function(url, root_path) {
     _assets_loaded = false;
+
+    root_path = root_path || '';
+    _object_loader.root = root_path;
 
     var OnLoadThreeScene = function(root) {
       _loading_manager.onLoad = function() {
@@ -267,18 +271,12 @@ TrackingDataManager = function() {
 
 
         _assets_loaded = true;
-        for (callback of _on_load_assets_callbacks)
+        for (callback of _on_load_assets_callbacks) {
           callback();
+          if (!_assets_loaded)
+            break;
+        }
         _on_load_assets_callbacks = [];
-
-
-
-        (function loop() {
-          window.requestAnimationFrame(loop);
-          var callbacks = _object_loader.GetOnUpdateCallbacks();
-          for (callback of callbacks)
-            callback();
-        })();
 
       };
     };
@@ -353,6 +351,12 @@ TrackingDataManager = function() {
     }
 
     return object;
+  };
+
+  this.UpdateAnimations = function() {
+    var callbacks = _object_loader.GetOnUpdateCallbacks();
+    for (callback of callbacks)
+      callback();
   };
 
 };

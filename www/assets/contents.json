@@ -10,11 +10,6 @@
     "object": "cube_mesh"
   },
   {
-    "uuid": "Monster",
-    "name": "Monster",
-    "object": "monster"
-  },
-  {
     "uuid": "banana",
     "name": "Banana",
     "object": "plane_banana"

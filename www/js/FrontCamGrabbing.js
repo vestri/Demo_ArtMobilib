@@ -1,23 +1,24 @@
+navigator.getUserMedia = navigator.getUserMedia ||
+navigator.webkitGetUserMedia ||
+navigator.mozGetUserMedia ||
+navigator.msGetUserMedia;
+
+window.URL = window.URL || window.webkitURL;
+
+
 FrontCamGrabbing = function() {
 
+  var _stream;
   var _dom_element = document.createElement('video');
-  _dom_element.setAttribute('autoplay', true)
+  _dom_element.setAttribute('autoplay', true);
 
   _dom_element.style.zIndex = -1;
-  _dom_element.style.position = 'absolute'
+  _dom_element.style.position = 'absolute';
 
-  _dom_element.style.top = '0px'
-  _dom_element.style.left = '0px'
-  _dom_element.style.width = '100%'
-  _dom_element.style.height = '100%'
-
-
-  navigator.getUserMedia = navigator.getUserMedia ||
-  navigator.webkitGetUserMedia ||
-  navigator.mozGetUserMedia ||
-  navigator.msGetUserMedia;
-
-  window.URL = window.URL || window.webkitURL;
+  _dom_element.style.top = '0px';
+  _dom_element.style.left = '0px';
+  _dom_element.style.width = '100%';
+  _dom_element.style.height = '100%';
 
 
   /*window.addEventListener('resize', function(event) {
@@ -45,6 +46,7 @@ FrontCamGrabbing = function() {
       }
 
       navigator.getUserMedia(constraints, function(stream) {
+        _stream = stream;
         _dom_element.src = window.URL.createObjectURL(stream);
       }, function(error) {
         console.error("Cant getUserMedia()! due to ", error);
@@ -77,7 +79,24 @@ FrontCamGrabbing = function() {
       on_error();
   }
 
-  GetSourcesMST(GetSourcesMD);
+  this.Start = function() {
+    GetSourcesMST(GetSourcesMD);
+  };
+
+  this.Stop = function() {
+    if (_stream) {
+      _stream.getTracks()[0].stop();
+      _stream = undefined;
+      this.domElement = undefined;
+    }
+  };
+
+  this.IsActive = function() {
+    if (_stream)
+      _stream.getTracks()[0].active;
+    else
+      return false;
+  };
 
   this.domElement = _dom_element;
 };

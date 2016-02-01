@@ -10,6 +10,7 @@
         <ion-item ng-click="SaveConfig()">Save channels</ion-item>
         <ion-item ng-click="LoadConfig()">Load channels</ion-item>
         <ion-item ng-click="LoadPreset()">Load presets</ion-item>
+        <ion-item ng-click="ShowDownloadModal()">Download assets</ion-item>
         <!--ion-item ng-click="GetPicture()" ng-controller="CameraPictureCtrl">Add marker</ion-item-->
       </ion-list>
     </ion-content>
@@ -55,3 +56,37 @@
 
 
 </ion-side-menus>
+
+<script id="download_modal" type="text/ng-template">
+  <ion-modal-view>
+    <ion-header-bar>
+      <a class="button button-icon icon ion-ios-arrow-back" ng-click="HideDownloadModal()"></a>
+      <h1 class="title">Download assets</h1>
+    </ion-header-bar>
+    <ion-content>
+      <ion-list>
+
+        <ion-item class="item-input-inset">
+        <span class="input-label">Marker</span>
+          <label class="item-input-wrapper">
+            <input type="text" placeholder="Enter name" ng-model="input.marker_name">
+          </label>
+          <button class="button button-small" ng-click="DownloadMarker()">
+            Download
+          </button>
+        </ion-item>
+
+        <ion-item class="item-input-inset">
+        <span class="input-label">Contents</span>
+          <label class="item-input-wrapper">
+            <input type="text" placeholder="Enter name" ng-model="input.contents_name">
+          </label>
+          <button class="button button-small" ng-click="DownloadContents()">
+            Download
+          </button>
+        </ion-item>
+
+      </ion-list>
+    </ion-content>
+  </ion-modal-view>
+</script>

@@ -7,10 +7,7 @@
 
   <link href="lib/ionic/css/ionic.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
-
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-    <link href="css/ionic.app.css" rel="stylesheet">
-  -->
+  
 
   <!-- ionic/angularjs js -->
   <script src="lib/ionic/js/ionic.bundle.js"></script>
@@ -41,7 +38,6 @@
   <script src="lib/ArtMobilib/ArtMobilib/device/DeviceOrientationControl.js"></script>
 
 
-  <script src="js/ConfigManager.js"></script>
   <script src="js/Channels.js"></script>
   <script src="js/TrackingDataManager.js"></script>
   <script src="js/DeviceCameraPicture.js"></script>
@@ -60,8 +56,14 @@
 
   <script src="js/services/DataManagerSvc.js"></script>
   <script src="js/services/ObjectRenderSvc.js"></script>
+  <!--script src="js/services/ConfigManagerSvc.js"></script-->
 
-  <script src="js/directives/canvasDrawObject.js"></script>
+  <script src="js/factories/ConfigManager.js"></script>
+  <script src="js/factories/ListDirEntries.js"></script>
+  <script src="js/factories/AssetsLoader.js"></script>
+  <script src="js/factories/AssetsDownloader.js"></script>
+  <script src="js/factories/JsonLoader.js"></script>
+
   <script src="js/directives/objectRender.js"></script>
   <script src="js/directives/channelRender.js"></script>
   <script src="js/directives/trackingView.js"></script>

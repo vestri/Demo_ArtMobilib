@@ -368,6 +368,8 @@ angular.module('starter')
                 _selection_object.scale.copy(_selected.scale);
               }
 
+              DataManagerSvc.tracking_data_manager.UpdateAnimations();
+
               _renderer.render(_scene, _camera);
             }
           })();

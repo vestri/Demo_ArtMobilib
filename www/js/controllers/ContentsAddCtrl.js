@@ -14,7 +14,7 @@ angular.module('starter')
 
     $scope.SelectContents = function(uuid) {
       DataManagerSvc.tracking_data_manager.AddContentsToChannel(_channel_id, { uuid: uuid });
-      $scope.GoPrevious();
+      $state.go('channel_edit', { channel_id: _channel_id } );
     };
 
 }])

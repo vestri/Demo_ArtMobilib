@@ -104,6 +104,8 @@ angular.module('starter')
 
           }
 
+          _webcam_grabbing.Start();
+
 
           // Main loop
           _running = true;
@@ -142,6 +144,7 @@ angular.module('starter')
 
             _trackedObjManager.Update();
 
+            DataManagerSvc.tracking_data_manager.UpdateAnimations();
 
             _scene.Update();
             _scene.Render();
@@ -152,6 +155,7 @@ angular.module('starter')
             _running = false;
             document.body.removeChild(_webcam_grabbing.domElement);
             document.body.removeChild(_canvas);
+            _webcam_grabbing.Stop();
           });
 
         });
