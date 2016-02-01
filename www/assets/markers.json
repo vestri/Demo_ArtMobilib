@@ -9,11 +9,13 @@
   {
     "uuid": "marker_3Dtricart",
     "name": "Marker image 1",
+    "is_image": true,
     "url": "assets/images/3Dtricart.jpg"
   },
   {
     "uuid": "marker_vsd",
     "name": "Marker image 2",
+    "is_image": true,
     "url": "assets/images/vsd.jpg"
   },
   {

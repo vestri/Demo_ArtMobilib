@@ -89,6 +89,7 @@ TrackingDataManager = function() {
           img: elem.url,
           name: elem.name || 'unnamed marker',
           is_tag: elem.is_tag,
+          is_image: elem.is_image,
           tag_id: elem.tag_id
         };
       }
