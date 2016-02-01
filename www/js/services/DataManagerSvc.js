@@ -13,6 +13,7 @@ angular.module('starter')
   var _on_download_marker;
   var _on_download_contents;
   var _assets_loader = new AssetsLoader();
+  var _loading_manager_config = new LoadingManager();
 
 
   function GetXDomainRequest() {
@@ -117,9 +118,23 @@ angular.module('starter')
   };
 
   this.LoadConfig = function() {
-    _local_config.Load(function() {
-      that.tracking_data_manager.ParseChannels(_local_config.json, true);
-    });
+    if (!_loading_manager_config.IsLoading()) {
+
+      _loading_manager_config.Start();
+      console.log('start');
+      _local_config.Load(function() {
+
+        that.tracking_data_manager.ParseChannels(_local_config.json, true);
+        _loading_manager_config.End();
+
+      });
+
+    }
+  };
+
+  this.OnLoadConfig = function(callback) {
+    _loading_manager_config.OnEnd(callback);
+    console.log('end');
   };
 
   this.SaveConfig = function() {
