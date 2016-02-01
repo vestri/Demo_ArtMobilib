@@ -33,7 +33,7 @@ FrontCamGrabbing = function() {
 
       var constraints = {
         video: true,
-        audio: false,
+        audio: false
       };
 
       for (var i = 0; i != source_infos.length; ++i) {
