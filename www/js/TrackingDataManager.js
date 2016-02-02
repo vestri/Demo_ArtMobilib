@@ -15,12 +15,13 @@ TrackingDataManager = function() {
   var _assets_loaded = false;
   
 
-  this.AddMarker = function(url, uuid, name, tag_id) {
+  this.AddMarker = function(url, uuid, name, tag_id, image_id) {
     _markers[uuid] =
     {
       img: url,
       name: name || 'unnamed marker',
       is_tag: (tag_id != undefined),
+      is_image: image_id === true,
       tag_id: tag_id
     };
   };
@@ -94,7 +95,7 @@ TrackingDataManager = function() {
       else if (typeof(elem.url) === 'undefined')
         console.warn('TrackingDataManager: failed to parse marker "' + elem.uuid + '": url undefined');
       else {
-        that.AddMarker(elem.url, elem.uuid, elem.name, (elem.is_tag) ? elem.tag_id : undefined);
+        that.AddMarker(elem.url, elem.uuid, elem.name, (elem.is_tag) ? elem.tag_id : undefined, elem.is_image);
       }
     }
 

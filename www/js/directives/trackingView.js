@@ -60,23 +60,12 @@ angular.module('starter')
           // Orient camera
           _orientationControl = new DeviceOrientationControl(_scene.GetCamera());
           _orientationControl.Connect();
+          _orientationControl.SetCoefficient(0.1);
 
-
-          // Start Aruco
-          _js_aruco_marker = new THREEx.JsArucoMarker();
 
           // start Image marker detection
-          var canvas2d = document.createElement('canvas');
-          canvas2d.width = 640;
-          canvas2d.height = 480;
-          var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, canvas2d);
+          var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, _canvas);
 
-          // we load trained images
-          /*_AMmarkerManager.AddMarker("lib/ArtMobilib/data/gvf.jpg");
-          _AMmarkerManager.AddMarker("lib/ArtMobilib/data/3Dtricart.jpg");
-          _AMmarkerManager.AddMarker("lib/ArtMobilib/data/vsd.jpg");*/
-
-          
           _trackedObjManager = new TrackedObjManager( { camera: _scene.GetCamera() } );
 
 
@@ -89,69 +78,7 @@ angular.module('starter')
           document.body.appendChild(_canvas);
 
 
-          var DetectorWorker = function(videoElement) {
-            var _worker;
-
-            var _canvas = document.createElement('canvas');
-            var _ctx = _canvas.getContext('2d');
-            var _markers = [];
-            var _video = videoElement;
-
-
-            this.Start = function() {
-              _worker = new Worker('js/MarkerDetectorWorker.js');
-              _worker.onmessage = function(e) {
-                if (e.data.msg === 'markers') {
-                  _markers = e.data.markers;
-                }
-              }
-            };
-
-            this.Update = function() {
-
-              if (_worker && _video instanceof HTMLVideoElement
-                && _video.readyState == _video.HAVE_ENOUGH_DATA) {
-
-                _canvas.width = _video.videoWidth;
-                _canvas.height = _video.videoHeight;
-                _ctx.drawImage(_video, 0, 0, _canvas.width, _canvas.height);
-
-                var data = _ctx.getImageData(0, 0, _canvas.width, _canvas.height);
-                var size = data.width * data.height * 4;
-                var buffer = new ArrayBuffer(size);
-
-                for (var i = 0; i < size; ++i) {
-                  buffer[i] = data.data[i];
-                }
-
-                var obj_data = {
-                  msg: 'new_img',
-                  buffer: buffer,
-                  width: data.width,
-                  height: data.height
-                };
-                _worker.postMessage(obj_data, [obj_data.buffer]);
-
-              }
-            };
-
-            this.Stop = function() {
-              if (_worker) {
-                _worker.terminate();
-                _worker = undefined;
-              }
-            };
-
-            this.GetMarkers = function() {
-              return _markers;
-            };
-
-            this.Empty = function() {
-              _markers = [];
-            };
-          };
-
-          var _detector_worker = new DetectorWorker(_webcam_grabbing.domElement);
+          var _detector_worker = new MarkerDetector(_webcam_grabbing.domElement);
           
 
           scope.$on('$destroy', function() {
@@ -185,16 +112,23 @@ angular.module('starter')
                     });
                   })(object);
                 }
+
+                if (marker.is_image) {
+                  var object = DataManagerSvc.tracking_data_manager.BuildChannelContents(uuid);
+
+                  // we load trained images
+                  _AMmarkerManager.AddMarker(marker.img, uuid);
+                  _scene.AddObject(object);
+                  _trackedObjManager.Add(object, uuid);
+                }
+
               }
 
+              _webcam_grabbing.Start();
             }
-
-            _webcam_grabbing.Start();
           }
 
           function Run() {
-            if (_destroyed)
-              return;
 
             _detector_worker.Start();
 
@@ -203,11 +137,9 @@ angular.module('starter')
               if (!_running)
                 return;
 
-              _orientationControl.Update();
+              // _orientationControl.Update();
 
               _detector_worker.Update();
-
-              //var tags = _js_aruco_marker.detectMarkers(_webcam_grabbing.domElement);
 
               var tags = _detector_worker.GetMarkers();
 
@@ -217,19 +149,19 @@ angular.module('starter')
                 for (uuid in channels) {
                   var marker = DataManagerSvc.tracking_data_manager.GetMarker(channels[uuid].marker);
                   if (marker.is_tag && marker.tag_id === tag.id) {
-                    var o = new THREE.Object3D();
-                    _js_aruco_marker.markerToObject3D(tag, o);
-                    _trackedObjManager.TrackCompose(uuid, o.position, o.quaternion, o.scale);
+                    _detector_worker.SetTransform(tag);
+                    _trackedObjManager.TrackCompose(uuid, _detector_worker.position,
+                      _detector_worker.quaternion, _detector_worker.scale);
                   }
                 }
               }
 
-              /*if (_AMmarkerManager.ProcessVideo()) {
-                console.log("Marker detected");
-                var o = new THREE.Object3D();
-                _AMmarkerManager.markerToObject3D(o);
-                _trackedObjManager.TrackCompose('mesh', o.position, o.quaternion, o.scale);
-              }*/
+              // if (_AMmarkerManager.ProcessVideo()) {
+              //     console.log("Marker detected");
+              //     var o = new THREE.Object3D();
+              //     _AMmarkerManager.markerToObject3D(o);
+              //   _trackedObjManager.TrackCompose(_AMmarkerManager.GetId(), o.position, o.quaternion, o.scale);
+              // }
 
               _trackedObjManager.Update();
 
@@ -238,6 +170,7 @@ angular.module('starter')
               _scene.Update();
               _scene.Render();
 
+              _detector_worker.Empty();
               window.requestAnimationFrame(loop);
             })();
           }

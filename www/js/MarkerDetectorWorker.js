@@ -1,55 +1,57 @@
+window = self;
 
+// aruco
 importScripts('../lib/ArtMobilib/ArtMobilib/aruco/cv.js');
 importScripts('../lib/ArtMobilib/ArtMobilib/aruco/aruco.js');
 importScripts('../lib/ArtMobilib/ArtMobilib/aruco/svd.js');
 importScripts('../lib/ArtMobilib/ArtMobilib/aruco/posit1.js');
 
+// jsfeat
+// importScripts('../lib/ArtMobilib/ArtMobilib/jsfeat/jsfeat.js');
+// importScripts('../lib/ArtMobilib/ArtMobilib/jsfeat/compatibility.js');
+// importScripts('../lib/ArtMobilib/ArtMobilib/jsfeat/profiler.js');
 
-var _is_available = true;
+// ArtMobilib
+// importScripts('../lib/ArtMobilib/ArtMobilib/CornerDetector.js');
+// importScripts('../lib/ArtMobilib/ArtMobilib/ImageMarkers.js');
+// importScripts('../lib/ArtMobilib/ArtMobilib/MarkerContainer.js');
+// importScripts('../lib/ArtMobilib/ArtMobilib/MarkerMatcher.js');
+// importScripts('../lib/ArtMobilib/ArtMobilib/webcamConverter.js');
+// importScripts('../lib/ArtMobilib/ArtMobilib/MarkerManager.js');
 
-var _buffer;
-var _width;
-var _height;
+
+
 var _detector = new AR.Detector();
 
 
-onmessage = function(e) {
-  console.log(typeof(e.data));
+function DetectMarkers(image, frame) {
+  if (image) {
 
-  var msg = e.data.msg;
-
-  switch (msg) {
-    case 'new_img':
-      _buffer = e.data.buffer;
-      _width = e.data.width;
-      _height = e.data.height;
-    break;
-  }
-}
-
-
-(function loop() {
-  if (_buffer) {
-    var image = new ImageData(_width, _height);
-    var size = _width * _height * 4;
-
-    for (i = 0; i < size; ++i) {
-      image.data[i] = _buffer[i];
-    }
-
-
-    var markers = detector.detect(image);
+    var markers = _detector.detect(image);
 
     var msg = {
-      msg: 'markers',
-      markers: markers
+      cmd: 'markers',
+      markers: markers,
+      frame: frame
     };
 
     postMessage(msg);
-
-
-    _buffer = undefined;
   }
+}
 
-  window.requestAnimationFrame(loop);
-})();
+function AddMarker() {
+
+}
+
+
+onmessage = function(e) {
+  var cmd = e.data.cmd;
+
+  switch (cmd) {
+    case 'new_img':
+      DetectMarkers(e.data.image, e.data.frame);
+    break;
+    case 'add_marker':
+    break;
+  }
+};
