@@ -88,13 +88,81 @@ angular.module('starter')
 
           document.body.appendChild(_canvas);
 
+
+          var DetectorWorker = function(videoElement) {
+            var _worker;
+
+            var _canvas = document.createElement('canvas');
+            var _ctx = _canvas.getContext('2d');
+            var _markers = [];
+            var _video = videoElement;
+
+
+            this.Start = function() {
+              _worker = new Worker('js/MarkerDetectorWorker.js');
+              _worker.onmessage = function(e) {
+                if (e.data.msg === 'markers') {
+                  _markers = e.data.markers;
+                }
+              }
+            };
+
+            this.Update = function() {
+
+              if (_worker && _video instanceof HTMLVideoElement
+                && _video.readyState == _video.HAVE_ENOUGH_DATA) {
+
+                _canvas.width = _video.videoWidth;
+                _canvas.height = _video.videoHeight;
+                _ctx.drawImage(_video, 0, 0, _canvas.width, _canvas.height);
+
+                var data = _ctx.getImageData(0, 0, _canvas.width, _canvas.height);
+                var size = data.width * data.height * 4;
+                var buffer = new ArrayBuffer(size);
+
+                for (var i = 0; i < size; ++i) {
+                  buffer[i] = data.data[i];
+                }
+
+                var obj_data = {
+                  msg: 'new_img',
+                  buffer: buffer,
+                  width: data.width,
+                  height: data.height
+                };
+                _worker.postMessage(obj_data, [obj_data.buffer]);
+
+              }
+            };
+
+            this.Stop = function() {
+              if (_worker) {
+                _worker.terminate();
+                _worker = undefined;
+              }
+            };
+
+            this.GetMarkers = function() {
+              return _markers;
+            };
+
+            this.Empty = function() {
+              _markers = [];
+            };
+          };
+
+          var _detector_worker = new DetectorWorker(_webcam_grabbing.domElement);
+          
+
           scope.$on('$destroy', function() {
             _running = false;
             _destroyed = true;
             document.body.removeChild(_webcam_grabbing.domElement);
             document.body.removeChild(_canvas);
             _webcam_grabbing.Stop();
+            _detector_worker.Stop();
           });
+
 
           function InitScene() {
             if (_destroyed)
@@ -122,12 +190,13 @@ angular.module('starter')
             }
 
             _webcam_grabbing.Start();
-
           }
 
           function Run() {
             if (_destroyed)
               return;
+
+            _detector_worker.Start();
 
             _running = true;
             (function loop() {
@@ -136,8 +205,11 @@ angular.module('starter')
 
               _orientationControl.Update();
 
+              _detector_worker.Update();
 
-              var tags = _js_aruco_marker.detectMarkers(_webcam_grabbing.domElement);
+              //var tags = _js_aruco_marker.detectMarkers(_webcam_grabbing.domElement);
+
+              var tags = _detector_worker.GetMarkers();
 
               var channels = DataManagerSvc.tracking_data_manager.GetChannelContainer();
 

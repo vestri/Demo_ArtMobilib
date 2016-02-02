@@ -121,7 +121,6 @@ angular.module('starter')
     if (!_loading_manager_config.IsLoading()) {
 
       _loading_manager_config.Start();
-      console.log('start');
       _local_config.Load(function() {
 
         that.tracking_data_manager.ParseChannels(_local_config.json, true);
@@ -134,7 +133,6 @@ angular.module('starter')
 
   this.OnLoadConfig = function(callback) {
     _loading_manager_config.OnEnd(callback);
-    console.log('end');
   };
 
   this.SaveConfig = function() {
