@@ -66,17 +66,9 @@ angular.module('starter')
           _js_aruco_marker = new THREEx.JsArucoMarker();
 
           // start Image marker detection
-          var canvas2d = document.createElement('canvas');
-          canvas2d.width = 640;
-          canvas2d.height = 480;
-          var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, canvas2d);
 
-          // we load trained images
-          /*_AMmarkerManager.AddMarker("lib/ArtMobilib/data/gvf.jpg");
-          _AMmarkerManager.AddMarker("lib/ArtMobilib/data/3Dtricart.jpg");
-          _AMmarkerManager.AddMarker("lib/ArtMobilib/data/vsd.jpg");*/
+        var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, _canvas);
 
-          
           _trackedObjManager = new TrackedObjManager( { camera: _scene.GetCamera() } );
 
 
@@ -117,18 +109,25 @@ angular.module('starter')
                     });
                   })(object);
                 }
+
+              if (marker.is_image) {
+                  var object = DataManagerSvc.tracking_data_manager.BuildChannelContents(uuid);
+
+                  // we load trained images
+                  _AMmarkerManager.AddMarker(marker.img, uuid);
+                  _scene.AddObject(object);
+                  _trackedObjManager.Add(object, uuid);
               }
 
             }
 
             _webcam_grabbing.Start();
 
+
           }
 
-          function Run() {
-            if (_destroyed)
-              return;
 
+          // Main loop
             _running = true;
             (function loop() {
               if (!_running)
@@ -152,12 +151,12 @@ angular.module('starter')
                 }
               }
 
-              /*if (_AMmarkerManager.ProcessVideo()) {
+            if (_AMmarkerManager.ProcessVideo()) {
                 console.log("Marker detected");
                 var o = new THREE.Object3D();
                 _AMmarkerManager.markerToObject3D(o);
-                _trackedObjManager.TrackCompose('mesh', o.position, o.quaternion, o.scale);
-              }*/
+              _trackedObjManager.TrackCompose(_AMmarkerManager.GetId(), o.position, o.quaternion, o.scale);
+            }
 
               _trackedObjManager.Update();
 
