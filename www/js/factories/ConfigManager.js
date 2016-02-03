@@ -44,6 +44,8 @@ angular.module('starter')
           }, function(error) {
             console.warn('Load failed', error);
             that.json = undefined;
+            if (on_load)
+              on_load();
           });
 
         }
@@ -55,8 +57,11 @@ angular.module('starter')
         var str = localStorage[that.filename];
         Parse(str, on_load);
       }
-      else
+      else {
         console.warn('ConfigManager: Load failed: "Storage" undefined');
+        if (on_load)
+          on_load();
+      }
     }
 
     this.Load = function(on_load) {
