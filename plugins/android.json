@@ -1,0 +1,30 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "com.ionicframework.demoartmobilib905525"
+        },
+        "cordova-plugin-screen-orientation": {
+            "PACKAGE_NAME": "com.ionicframework.demoartmobilib905525"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.ionicframework.demoartmobilib905525"
+        },
+        "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.ionicframework.demoartmobilib905525"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.ionicframework.demoartmobilib905525"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "com.ionicframework.demoartmobilib905525"
+        }
+    },
+    "dependent_plugins": {}
+}
