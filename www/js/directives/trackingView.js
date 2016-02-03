@@ -121,11 +121,9 @@ angular.module('starter')
                   // _scene.AddObject(object);
                   // _trackedObjManager.Add(object, uuid);
                 }
-
               }
-
-              _webcam_grabbing.Start();
             }
+            _webcam_grabbing.Start();
           }
 
           function Run() {
