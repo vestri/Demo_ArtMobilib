@@ -64,7 +64,7 @@ angular.module('starter')
 
 
           // start Image marker detection
-          var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, _canvas);
+          // var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, _canvas);
 
           _trackedObjManager = new TrackedObjManager( { camera: _scene.GetCamera() } );
 
@@ -117,9 +117,9 @@ angular.module('starter')
                   var object = DataManagerSvc.tracking_data_manager.BuildChannelContents(uuid);
 
                   // we load trained images
-                  _AMmarkerManager.AddMarker(marker.img, uuid);
-                  _scene.AddObject(object);
-                  _trackedObjManager.Add(object, uuid);
+                  // _AMmarkerManager.AddMarker(marker.img, uuid);
+                  // _scene.AddObject(object);
+                  // _trackedObjManager.Add(object, uuid);
                 }
 
               }

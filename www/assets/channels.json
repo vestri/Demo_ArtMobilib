@@ -1,25 +1,10 @@
 [
   {
-    "name": "Channel preset 1",
-    "marker": "marker_vsd",
+    "name": "Channel le hublot",
+    "marker": "tag_1001",
     "contents": [
-      {
-        "uuid": "banana"
-      },
       {
         "uuid": "lehublot"
-      }
-    ]
-  },
-  {
-    "name": "Channel preset 2",
-    "marker": "marker_tag",
-    "contents": [
-      {
-        "uuid": "Monster"
-      },
-      {
-        "uuid": "Rock"
       }
     ]
   }

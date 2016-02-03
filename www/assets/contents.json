@@ -1,27 +1,22 @@
 [
   {
-    "uuid": "Rock",
-    "name": "Rock",
-    "object": "rock"
+    "uuid": "box",
+    "name": "Red box",
+    "object": "mesh_cube"
   },
   {
-    "uuid": "Cube",
-    "name": "Cube",
-    "object": "cube_mesh"
+    "uuid": "sphere",
+    "name": "Blue sphere",
+    "object": "mesh_sphere"
   },
   {
-    "uuid": "banana",
-    "name": "Banana",
-    "object": "plane_banana"
+    "uuid": "plane",
+    "name": "Yellow plane",
+    "object": "mesh_plane"
   },
   {
     "uuid": "lehublot",
     "name": "Le Hublot",
-    "object": "plane_lehublot"
-  },
-  {
-    "uuid": "coconut",
-    "name": "Coconut",
-    "object": "plane_coconut"
+    "object": "mesh_lehublot"
   }
 ]
