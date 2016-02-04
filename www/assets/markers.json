@@ -54,5 +54,12 @@
     "url": "assets/images/tag_1023.jpg",
     "is_tag": true,
     "tag_id": 1023
+  },
+  {
+    "uuid": "marker_vsd",
+    "name": "Marker image 1",
+    "url": "assets/images/vsd.jpg",
+    "is_image": true
   }
+
 ]

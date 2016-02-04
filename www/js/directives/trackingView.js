@@ -64,7 +64,7 @@ angular.module('starter')
 
 
           // start Image marker detection
-          // var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, _canvas);
+          var _AMmarkerManager = new MarkerManager(_webcam_grabbing.domElement, _canvas);
 
           _trackedObjManager = new TrackedObjManager( { camera: _scene.GetCamera() } );
 
@@ -117,9 +117,15 @@ angular.module('starter')
                   var object = DataManagerSvc.tracking_data_manager.BuildChannelContents(uuid);
 
                   // we load trained images
-                  // _AMmarkerManager.AddMarker(marker.img, uuid);
-                  // _scene.AddObject(object);
-                  // _trackedObjManager.Add(object, uuid);
+                  _AMmarkerManager.AddMarker(marker.img, uuid);
+
+                  (function(object) {
+                    _trackedObjManager.Add(object, uuid, function() {
+                      _scene.AddObject(object);
+                    }, function() {
+                      _scene.RemoveObject(object);
+                    });
+                  })(object);
                 }
               }
             }
@@ -146,32 +152,32 @@ angular.module('starter')
               for (tag of tags) {
                 for (uuid in channels) {
                   var marker = DataManagerSvc.tracking_data_manager.GetMarker(channels[uuid].marker);
-                  if (marker.is_tag && marker.tag_id === tag.id) {
-                    _detector_worker.SetTransform(tag);
-                    _trackedObjManager.TrackCompose(uuid, _detector_worker.position,
-                      _detector_worker.quaternion, _detector_worker.scale);
-                  }
-                }
+              if (marker.is_tag && marker.tag_id === tag.id) {
+                _detector_worker.SetTransform(tag);
+                _trackedObjManager.TrackCompose(uuid, _detector_worker.position,
+                  _detector_worker.quaternion, _detector_worker.scale);
               }
+            }
+            }
 
-              // if (_AMmarkerManager.ProcessVideo()) {
-              //     console.log("Marker detected");
-              //     var o = new THREE.Object3D();
-              //     _AMmarkerManager.markerToObject3D(o);
-              //   _trackedObjManager.TrackCompose(_AMmarkerManager.GetId(), o.position, o.quaternion, o.scale);
-              // }
-
-              _trackedObjManager.Update();
-
-              DataManagerSvc.tracking_data_manager.UpdateAnimations();
-
-              _scene.Update();
-              _scene.Render();
-
-              _detector_worker.Empty();
-              window.requestAnimationFrame(loop);
-            })();
+          if (_AMmarkerManager.ProcessVideo()) {
+            console.log("Marker detected");
+            var o = new THREE.Object3D();
+            _AMmarkerManager.markerToObject3D(o);
+            _trackedObjManager.TrackCompose(_AMmarkerManager.GetId(), o.position, o.quaternion, o.scale);
           }
+
+          _trackedObjManager.Update();
+
+          DataManagerSvc.tracking_data_manager.UpdateAnimations();
+
+          _scene.Update();
+          _scene.Render();
+
+          _detector_worker.Empty();
+          window.requestAnimationFrame(loop);
+        })();
+      }
 
           DataManagerSvc.OnLoadConfig(function() {
             DataManagerSvc.tracking_data_manager.OnLoadContentsAssets(function() {
@@ -180,11 +186,11 @@ angular.module('starter')
             });
           });
 
-        });
+  });
 
 
-      }
+}
 
-    }
-  }
+}
+}
 ])

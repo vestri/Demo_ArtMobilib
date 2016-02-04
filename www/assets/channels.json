@@ -1,4 +1,13 @@
 [
+{
+    "name": "Channel image test",
+    "marker": "marker_vsd",
+    "contents": [
+      {
+        "uuid": "lehublot"
+      }
+    ]
+  },
   {
     "name": "Channel le hublot",
     "marker": "tag_1001",
