@@ -44,8 +44,6 @@ ObjectLoaderAM = function ( manager ) {
 
   this.json = {};
 
-  this.root;
-
 
   var _on_update_callbacks = [];
 
@@ -87,12 +85,10 @@ ObjectLoaderAM = function ( manager ) {
   this.ParseConstants = function ( json ) {
     data = (json !== undefined) ? json : {};
 
-    that.constants.asset_path = (that.root) ? that.root + '/' : '';
-    if (data.asset_path)
-      that.constants.asset_path = that.constants.asset_path + data.asset_path + '/';
-    that.constants.image_path = that.constants.asset_path + ((data.image_path !== undefined) ? data.image_path : '');
-    that.constants.video_path = that.constants.asset_path + ((data.video_path !== undefined) ? data.video_path : '');
-    that.constants.model_path = that.constants.asset_path + ((data.model_path !== undefined) ? data.model_path : '');
+    that.constants.asset_path = (data.asset_path !== undefined) ? data.asset_path : ".";
+    that.constants.image_path = that.constants.asset_path + '/' + ((data.image_path !== undefined) ? data.image_path : "");
+    that.constants.video_path = that.constants.asset_path + '/' + ((data.video_path !== undefined) ? data.video_path : "");
+    that.constants.model_path = that.constants.asset_path + '/' + ((data.model_path !== undefined) ? data.model_path : "");
   };
 
   this.ParseMaterials = function ( json ) {

@@ -40,7 +40,6 @@ DeviceOrientationControl = function(object) {
 
   var _screen_orientation = 0;
 
-  var _method_name = 'coef';
   var _smooth = new this.CoefMethod();
 
 
@@ -98,12 +97,6 @@ DeviceOrientationControl = function(object) {
       SetObjectQuaternion(that.object.quaternion, _smooth.alpha, _smooth.beta, _smooth.gamma, orient);
     }
 
-  };
-
-  this.SetCoefficient = function(val) {
-    if (_method_name === 'coef') {
-      _smooth.coef = val;
-    }
   };
 };
 

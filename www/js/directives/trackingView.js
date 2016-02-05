@@ -60,7 +60,7 @@ angular.module('starter')
           // Orient camera
           _orientationControl = new DeviceOrientationControl(_scene.GetCamera());
           _orientationControl.Connect();
-          _orientationControl.SetCoefficient(0.1);
+         // _orientationControl.SetCoefficient(0.1);
 
 
           // start Image marker detection
